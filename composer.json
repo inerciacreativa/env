@@ -1,0 +1,26 @@
+{
+  "name": "inerciacreativa/env",
+  "description": "Simple library to consume environment variables",
+  "homepage": "https://github.com/inerciacreativa/env",
+  "type": "library",
+  "keywords": [
+    "env", "php"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jose Cuesta",
+      "email": "jose.cuesta@inerciacreativa.com",
+      "homepage": "http://inerciacreativa.com",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=7.0"
+  },
+  "autoload": {
+    "psr-0": {
+      "Env": "src/"
+    }
+  }
+}
