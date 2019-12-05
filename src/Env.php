@@ -1,18 +1,23 @@
 <?php
 
+/**
+ * Class Env
+ */
 class Env {
 
-	const CONVERT_BOOL = 1;
+	public const CONVERT_BOOL = 1;
 
-	const CONVERT_NULL = 2;
+	public const CONVERT_NULL = 2;
 
-	const CONVERT_INT = 4;
+	public const CONVERT_INT = 4;
 
-	const STRIP_QUOTES = 8;
+	public const STRIP_QUOTES = 8;
 
-	const USE_ENV_ARRAY = 16;
+	public const USE_ENV_ARRAY = 16;
 
-	public static $options = self::CONVERT_BOOL | self::CONVERT_NULL | self::CONVERT_INT | self::STRIP_QUOTES;
+	public const USE_SERVER_ARRAY = 32;
+
+	public static $options = self::CONVERT_BOOL | self::CONVERT_NULL | self::CONVERT_INT | self::STRIP_QUOTES | self::USE_ENV_ARRAY;
 
 	/**
 	 * Returns an environment variable.
@@ -23,14 +28,14 @@ class Env {
 	 * @return mixed
 	 */
 	public static function get(string $name, $default = null) {
-		if (self::$options & self::USE_ENV_ARRAY) {
-			$value = $_ENV[$name] ?? false;
-		} else {
-			$value = getenv($name);
-		}
+		$value = $default;
 
-		if ($value === false) {
-			return $default;
+		if (function_exists('getenv')) {
+			$value = getenv($name);
+		} else if ((self::$options & self::USE_ENV_ARRAY) && array_key_exists($name, $_ENV)) {
+			$value = $_ENV[$name];
+		} else if ((self::$options & self::USE_SERVER_ARRAY) && array_key_exists($name, $_SERVER)) {
+			$value = $_SERVER[$name];
 		}
 
 		return self::convert($value);
@@ -78,8 +83,8 @@ class Env {
 	 *
 	 * @return string
 	 */
-	private static function stripQuotes(string $value): string {
-		if (($value[0] === '"' && substr($value, -1) === '"') || ($value[0] === "'" && substr($value, -1) === "'")) {
+	protected static function stripQuotes(string $value): string {
+		if ((strpos($value, '"') === 0 && substr($value, -1) === '"') || (strpos($value, "'") === 0 && substr($value, -1) === "'")) {
 			return substr($value, 1, -1);
 		}
 
